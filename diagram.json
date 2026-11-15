@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "author": "esp32-debug-agent",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": -120,
+      "left": 180,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 60,
+      "left": 220,
+      "attrs": {
+        "color": "red"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 40,
+      "left": 130,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot1",
+      "top": 140,
+      "left": 180,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [
+      "dht1:VCC",
+      "esp:3V3",
+      "blue",
+      []
+    ],
+    [
+      "dht1:GND",
+      "esp:GND.1",
+      "blue",
+      []
+    ],
+    [
+      "dht1:SDA",
+      "esp:4",
+      "blue",
+      []
+    ],
+    [
+      "esp:26",
+      "r1:1",
+      "blue",
+      []
+    ],
+    [
+      "r1:2",
+      "led1:A",
+      "blue",
+      []
+    ],
+    [
+      "led1:C",
+      "esp:GND.2",
+      "blue",
+      []
+    ],
+    [
+      "pot1:VCC",
+      "esp:3V3",
+      "blue",
+      []
+    ],
+    [
+      "pot1:GND",
+      "esp:GND.1",
+      "blue",
+      []
+    ],
+    [
+      "pot1:SIG",
+      "esp:34",
+      "blue",
+      []
+    ]
+  ]
+}

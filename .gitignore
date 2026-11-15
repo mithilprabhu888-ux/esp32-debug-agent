@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# PlatformIO build output
+.pio/
+
+# generated runtime artifacts
+logs/
+scenarios/
+.faults/
+screenshot.png
+
+# secrets
+.env

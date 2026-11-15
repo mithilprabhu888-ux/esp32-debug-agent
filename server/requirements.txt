@@ -1,0 +1,3 @@
+# MCP server + build toolchain
+mcp[cli]>=1.2,<2
+platformio>=6.1
