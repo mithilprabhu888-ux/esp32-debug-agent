@@ -8,13 +8,20 @@ hardware/firmware faults, and then diagnose what went wrong — an
 
 ```
 ┌──────────────┐   MCP (stdio)   ┌────────────────┐   subprocess    ┌───────────┐   cloud sim   ┌────────────────┐
-│ Claude / AI  │ ◄─────────────► │  MCP server    │ ◄─────────────► │ wokwi-cli │ ◄───────────► │ virtual ESP32  │
-│   client     │                 │ (Python)       │                 │           │               │ + DHT22/LED/pot│
+│ Groq (Llama) │ ◄─────────────► │  agent + MCP   │ ◄─────────────► │ wokwi-cli │ ◄───────────► │ virtual ESP32  │
+│  chat API    │   tool calling  │  server        │                 │           │               │ + DHT22/LED/pot│
 └──────────────┘                 └───────┬────────┘                 └───────────┘               └────────────────┘
                                          │ PlatformIO cross-compiles src/main.cpp
                                          ▼
                                   .pio/build/esp32dev/firmware.bin
 ```
+
+Two entry points:
+* **`agent/agent.py`** — a self-contained agent loop: connects to the MCP
+  server as a client, feeds its tools to a Groq-hosted model
+  (`openai/gpt-oss-120b`), and runs tool-calling until the task is done.
+  Works with any OpenAI-compatible provider (change `GROQ_BASE_URL`).
+* **Any MCP client** (Claude Desktop, Cline, Cursor) — config in the README below.
 
 ## Why this design
 
@@ -95,6 +102,19 @@ Add to `claude_desktop_config.json` → `mcpServers`:
 }
 ```
 
+## Run the built-in agent (Groq)
+
+```powershell
+setx GROQ_API_KEY "gsk_..."                    # console.groq.com
+python agent/agent.py "Turn the LED on and show the device status"
+python agent/agent.py --max-steps 30 "Inject a sensor fault, run the board,
+    diagnose what is wrong and fix it"
+```
+
+The agent connects to the MCP server over stdio, exposes all tools to the
+model, and prints every tool call (`🔧 step N: tool(args) → result`) so the
+debugging session is readable in a demo recording.
+
 ## Demo scenarios (the interview stories)
 
 1. **Sensor fault** — `inject_fault("sensor_disconnect")` → `run_simulation`
@@ -117,6 +137,8 @@ Add to `claude_desktop_config.json` → `mcpServers`:
 │   ├── main.py          # MCP server + tool definitions (FastMCP)
 │   ├── runner.py        # wokwi-cli / PlatformIO subprocess management
 │   └── faults.py        # fault-injection engine (with backup/restore)
+├── agent/
+│   └── agent.py         # Groq agent loop (MCP client + tool-calling)
 ├── logs/                # generated: serial logs of every run
 ├── scenarios/           # generated: wokwi automation scenario YAMLs
 └── .faults/             # generated: backups for fault restore
